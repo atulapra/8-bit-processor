@@ -7,8 +7,8 @@
 //flag_register[3] is carry flag
 //R0 and R1 are standard input registers. 
 //R0 is the standard output register
-module execution_unit(clock,ld,write,enable_alu,en_Memory,addr,indata,outdata,fn_sel,flag_register);
-input clock,ld,write,enable_alu,en_Memory;
+module execution_unit(ld,write,enable_alu,en_Memory,addr,indata,outdata,fn_sel,flag_register);
+input ld,write,enable_alu,en_Memory;
 input [7:0] indata;												//Input data
 wire [7:0] Databus;												//Databus
 input [2:0] addr;												//Address bus
@@ -20,10 +20,9 @@ reg [7:0] Memory [0:5];										//Registers
 input [2:0] fn_sel;											//Function select lines
 assign outdata = mem_value;
 assign Databus = ld ? indata : mem_value;						//When ld = 1, load input data in databus. Else, when ld = 0, load databus with value which has been read
-initial
-begin
-end 
-always @(posedge clock)
+
+//Data Memory
+always @(*)
 begin
 if (en_Memory)
     begin
@@ -32,6 +31,8 @@ if (en_Memory)
 		else 
         mem_value <= Memory [addr];		// Read
     end
+
+//ALU
 if(enable_alu)
 begin
 case(fn_sel)
@@ -156,7 +157,7 @@ en_Memory=0;
 wram=0;
 en_ram=0;
 end
-execution_unit EU(.clock(clock),.ld(ld),.write(write),.enable_alu(enable_alu),.en_Memory(en_Memory),.addr(addr),.indata(data),.outdata(dataout),.fn_sel(control_bus),.flag_register(flag));
+execution_unit EU(.ld(ld),.write(write),.enable_alu(enable_alu),.en_Memory(en_Memory),.addr(addr),.indata(data),.outdata(dataout),.fn_sel(control_bus),.flag_register(flag));
 
 always @(posedge clock)
 begin
